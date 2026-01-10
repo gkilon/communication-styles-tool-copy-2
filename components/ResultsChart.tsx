@@ -45,23 +45,11 @@ export const ResultsChart: React.FC<ResultsChartProps> = ({ scores }) => {
         </div>
       </div>
 
-      <div className="mt-8 flex justify-center gap-4 flex-wrap">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-rose-500"></div>
-          <span className="text-sm font-bold text-brand-dark">אדום</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-indigo-500"></div>
-          <span className="text-sm font-bold text-brand-dark">כחול</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-amber-400"></div>
-          <span className="text-sm font-bold text-brand-dark">צהוב</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
-          <span className="text-sm font-bold text-brand-dark">ירוק</span>
-        </div>
+      <div className="mt-8 flex justify-center gap-6">
+        <div className="w-4 h-4 rounded-full bg-rose-500 shadow-md"></div>
+        <div className="w-4 h-4 rounded-full bg-indigo-500 shadow-md"></div>
+        <div className="w-4 h-4 rounded-full bg-amber-400 shadow-md"></div>
+        <div className="w-4 h-4 rounded-full bg-emerald-500 shadow-md"></div>
       </div>
 
       <p className="mt-6 text-center text-brand-muted text-sm px-4">

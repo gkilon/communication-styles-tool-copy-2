@@ -4,7 +4,7 @@ import { IntroScreen } from './components/IntroScreen';
 import { QuestionnaireScreen } from './components/QuestionnaireScreen';
 import { ResultsScreen } from './components/ResultsScreen';
 import { PasswordScreen } from './components/PasswordScreen';
-import { SelectionScreen } from './components/SelectionScreen';
+import { UnifiedEntryScreen } from './components/UnifiedEntryScreen';
 import AuthScreen from './components/AuthScreen';
 import { Scores } from './types';
 import { QUESTION_PAIRS } from './constants/questionnaireData';
@@ -19,6 +19,7 @@ const SimpleApp: React.FC<SimpleAppProps> = ({ onAdminLoginAttempt, user }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showTeamAuth, setShowTeamAuth] = useState(false);
   const [showPersonalAuth, setShowPersonalAuth] = useState(false);
+  const [showAdminAuth, setShowAdminAuth] = useState(false);
   const [step, setStep] = useState<'intro' | 'questionnaire' | 'results'>('intro');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [answers, setAnswers] = useState<Record<string, number>>({});
@@ -82,6 +83,7 @@ const SimpleApp: React.FC<SimpleAppProps> = ({ onAdminLoginAttempt, user }) => {
     setIsAuthenticated(false);
     setShowPersonalAuth(false);
     setShowTeamAuth(false);
+    setShowAdminAuth(false);
     handleReset();
     import('firebase/auth').then(({ signOut, getAuth }) => {
       const auth = getAuth();
@@ -92,86 +94,82 @@ const SimpleApp: React.FC<SimpleAppProps> = ({ onAdminLoginAttempt, user }) => {
   const handleSelectionReset = () => {
     setShowTeamAuth(false);
     setShowPersonalAuth(false);
+    setShowAdminAuth(false);
   };
 
   return (
     <div className="min-h-screen bg-transparent text-brand-dark p-4 sm:p-8 font-sans dir-rtl flex flex-col items-center">
       <div className="w-full max-w-6xl mx-auto">
-        <header className="flex flex-col sm:flex-row justify-between items-center mb-16 relative gap-8 z-20">
-          <div className="flex flex-col select-none group items-center sm:items-start" dir="ltr">
-            <div className="flex items-baseline leading-none text-brand-dark text-3xl sm:text-4xl transition-colors">
-              <span className="font-light tracking-[0.1em] mr-1">GILAD</span>
-              <span className="font-black tracking-[0.05em]">KILON</span>
-              <span className="font-black text-brand-accent text-3xl sm:text-4xl leading-none ml-0.5">.</span>
-            </div>
-            <div className="font-bold uppercase tracking-[0.35em] text-brand-muted text-[10px] sm:text-[12px] mt-2 w-full transition-colors text-center sm:text-left">
-              Management Consulting
-            </div>
+
+        <div className="text-center sm:text-right">
+          <h1 className="text-2xl sm:text-3xl font-bold text-brand-dark tracking-tight">
+            שאלון סגנונות תקשורת
+          </h1>
+          <p className="text-brand-muted mt-1 text-lg font-light">תובנות מבוססות AI לפיתוח אישי וניהולי</p>
+        </div>
+
+        {(isAuthenticated || showPersonalAuth || showTeamAuth) && (
+          <div className="sm:absolute top-0 right-0 mt-4 sm:mt-0">
+            <button
+              onClick={isAuthenticated ? handleLogout : handleSelectionReset}
+              className="text-sm text-brand-muted hover:text-brand-dark border border-brand-muted/30 rounded px-4 py-2 bg-white/50 backdrop-blur-sm transition-colors"
+            >
+              חזרה
+            </button>
           </div>
+        )}
+      </header>
 
-          <div className="text-center sm:text-right">
-            <h1 className="text-2xl sm:text-3xl font-bold text-brand-dark tracking-tight">
-              שאלון סגנונות תקשורת
-            </h1>
-            <p className="text-brand-muted mt-1 text-lg font-light">תובנות מבוססות AI לפיתוח אישי וניהולי</p>
-          </div>
-
-          {(isAuthenticated || showPersonalAuth || showTeamAuth) && (
-            <div className="sm:absolute top-0 right-0 mt-4 sm:mt-0">
-              <button
-                onClick={isAuthenticated ? handleLogout : handleSelectionReset}
-                className="text-sm text-brand-muted hover:text-brand-dark border border-brand-muted/30 rounded px-4 py-2 bg-white/50 backdrop-blur-sm transition-colors"
-              >
-                חזרה
-              </button>
-            </div>
-          )}
-        </header>
-
-        <main className="w-full flex justify-center mt-12">
-          {!isAuthenticated ? (
-            !showTeamAuth && !showPersonalAuth ? (
-              <SelectionScreen
-                onPersonalSelect={() => setShowPersonalAuth(true)}
-                onTeamSelect={() => setShowTeamAuth(true)}
-              />
-            ) : showTeamAuth ? (
-              <AuthScreen onLoginSuccess={() => { }} onBack={handleSelectionReset} />
-            ) : (
-              <PasswordScreen
-                onAuthenticate={handleSimpleAuthenticate}
-                onAdminLogin={onAdminLoginAttempt}
-                onTeamLoginClick={() => setShowTeamAuth(true)}
-                onBack={handleSelectionReset}
-                hasDatabaseConnection={true} // Always show for demo/preview
-              />
-            )
+      <main className="w-full flex justify-center mt-12">
+        {!isAuthenticated ? (
+          !showTeamAuth && !showPersonalAuth && !showAdminAuth ? (
+            <UnifiedEntryScreen
+              onPersonalSelect={() => setShowPersonalAuth(true)}
+              onTeamSelect={() => setShowTeamAuth(true)}
+              onAdminSelect={() => setShowAdminAuth(true)}
+            />
+          ) : showTeamAuth ? (
+            <AuthScreen onLoginSuccess={() => { }} onBack={handleSelectionReset} />
+          ) : showAdminAuth ? (
+            <PasswordScreen
+              onAuthenticate={() => false}
+              onAdminLogin={onAdminLoginAttempt}
+              onBack={handleSelectionReset}
+              hasDatabaseConnection={false}
+            />
           ) : (
-            <div className="w-full">
-              {step === 'intro' && <IntroScreen onStart={handleStart} />}
-              {step === 'questionnaire' && (
-                <QuestionnaireScreen
-                  answers={answers}
-                  setAnswers={setAnswers}
-                  onSubmit={handleSubmit}
-                  currentQuestionIndex={currentQuestionIndex}
-                  setCurrentQuestionIndex={setCurrentQuestionIndex}
-                />
-              )}
-              {step === 'results' && scores && (
-                <ResultsScreen
-                  scores={scores}
-                  onReset={handleReset}
-                  onEdit={handleEditAnswers}
-                  onLogout={handleLogout}
-                  user={user}
-                />
-              )}
-            </div>
-          )}
-        </main>
-      </div>
+            <PasswordScreen
+              onAuthenticate={handleSimpleAuthenticate}
+              onBack={handleSelectionReset}
+              hasDatabaseConnection={false}
+            />
+          )
+        ) : (
+          <div className="w-full">
+            {step === 'intro' && <IntroScreen onStart={handleStart} />}
+            {step === 'questionnaire' && (
+              <QuestionnaireScreen
+                answers={answers}
+                setAnswers={setAnswers}
+                onSubmit={handleSubmit}
+                currentQuestionIndex={currentQuestionIndex}
+                setCurrentQuestionIndex={setCurrentQuestionIndex}
+              />
+            )}
+            {step === 'results' && scores && (
+              <ResultsScreen
+                scores={scores}
+                onReset={handleReset}
+                onEdit={handleEditAnswers}
+                onLogout={handleLogout}
+                user={user}
+              />
+            )}
+          </div>
+        )}
+      </main>
     </div>
+    </div >
   );
 };
 

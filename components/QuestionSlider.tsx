@@ -16,11 +16,6 @@ export const QuestionSlider: React.FC<QuestionSliderProps> = ({ question, value,
   const visualValue = value === 0 ? 3.5 : value;
   const isUnanswered = value === 0;
 
-  // Helper to handle direct click on numbers
-  const handleNumberClick = (num: number) => {
-    onChange(num);
-  };
-
   return (
     <div className="w-full select-none">
       {/* Labels Row */}
@@ -101,23 +96,6 @@ export const QuestionSlider: React.FC<QuestionSliderProps> = ({ question, value,
           className={`w-full h-2 rounded-lg appearance-none cursor-pointer ${isUnanswered ? 'slider-unanswered' : ''}`}
         />
 
-      </div>
-
-      {/* Clickable Numbers Below */}
-      <div className="flex justify-between mt-4 px-1">
-        {[1, 2, 3, 4, 5, 6].map((num) => (
-          <button
-            key={num}
-            onClick={() => handleNumberClick(num)}
-            className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center text-xl font-bold transition-all duration-200 
-                    ${value === num
-                ? 'bg-brand-accent text-white scale-110 shadow-lg ring-2 ring-brand-accent/30'
-                : 'bg-white text-brand-muted hover:bg-brand-beige hover:text-brand-dark border border-brand-muted/20'
-              }`}
-          >
-            {num}
-          </button>
-        ))}
       </div>
 
       <div className="text-center h-10 flex items-center justify-center mt-8">
