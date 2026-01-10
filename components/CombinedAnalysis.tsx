@@ -8,38 +8,51 @@ interface Analysis {
 }
 
 interface CombinedAnalysisProps {
-  scores: any; // Assuming 'scores' is the new prop, type can be refined if known
+  analysis: Analysis;
 }
 
-// Assuming getDominantStyles and PROFILE_DESCRIPTIONS are defined elsewhere
-// For the purpose of this edit, we'll assume they are available in scope.
-// Example placeholder for types if they were to be defined here:
-// interface ProfileDescription {
-//   name: string;
-//   description: string;
-//   focus: string;
-// }
-// declare const getDominantStyles: (scores: any) => { dominantStyle: string; secondaryStyle: string; };
-// declare const PROFILE_DESCRIPTIONS: { [key: string]: ProfileDescription };
-
-export const CombinedAnalysis: React.FC<CombinedAnalysisProps> = ({ scores }) => {
-  // Placeholder for getDominantStyles and PROFILE_DESCRIPTIONS if not imported
-  // In a real scenario, these would be imported or defined globally.
-  const getDominantStyles = (s: any) => ({ dominantStyle: "dominant", secondaryStyle: "secondary" });
-  const PROFILE_DESCRIPTIONS: { [key: string]: { name: string; description: string; focus: string; } } = {
-    "dominant": { name: "הסגנון הדומיננטי", description: "תיאור הסגנון הדומיננטי", focus: "התמקדות דומיננטית" },
-    "secondary": { name: "הסגנון המשני", description: "תיאור הסגנון המשני", focus: "התמקדות משנית" },
-  };
-
-  const { dominantStyle, secondaryStyle } = getDominantStyles(scores);
-  const dominantProfile = PROFILE_DESCRIPTIONS[dominantStyle];
-  const secondaryProfile = PROFILE_DESCRIPTIONS[secondaryStyle];
+export const CombinedAnalysis: React.FC<CombinedAnalysisProps> = ({ analysis }) => {
+  if (!analysis) {
+    return null;
+  }
 
   return (
-          <h4 className="text-xl font-bold text-brand-dark mb-2 text-brand-touch">המלצות לפעולה</h4>
-          <p className="text-lg">{analysis.recommendations}</p>
-        </div >
-      </div >
-    </div >
+    <div className="bg-white/80 backdrop-blur-md p-8 rounded-2xl border border-brand-muted/20 shadow-lg">
+      <h2 className="text-3xl font-black text-brand-dark mb-6">הניתוח המשולב שלך</h2>
+
+      <div className="space-y-8">
+        {/* General */}
+        <div className="border-r-4 border-brand-accent pr-6">
+          <h3 className="text-2xl font-bold text-brand-dark mb-3">כללי</h3>
+          <p className="text-brand-muted leading-relaxed text-lg">
+            {analysis.general}
+          </p>
+        </div>
+
+        {/* Strengths & Weaknesses */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-green-50 p-5 rounded-xl border-r-4 border-green-500">
+            <h4 className="font-bold text-brand-dark mb-3 text-lg text-green-700">חוזקות</h4>
+            <p className="text-brand-muted leading-relaxed">{analysis.strengths}</p>
+          </div>
+
+          <div className="bg-amber-50 p-5 rounded-xl border-r-4 border-amber-500">
+            <h4 className="font-bold text-brand-dark mb-3 text-lg text-amber-700">אזורים לפיתוח</h4>
+            <p className="text-brand-muted leading-relaxed">{analysis.weaknesses}</p>
+          </div>
+        </div>
+
+        {/* Actionable Insights */}
+        <div className="bg-gradient-to-l from-brand-touch/5 to-transparent p-6 rounded-xl border border-brand-touch/20">
+          <h4 className="font-bold text-brand-dark mb-3 text-lg flex items-center gap-2">
+            <span className="text-brand-touch text-2xl">💡</span>
+            המלצות לפעולה
+          </h4>
+          <p className="text-brand-muted leading-relaxed text-lg">
+            {analysis.recommendations}
+          </p>
+        </div>
+      </div>
+    </div>
   );
 };

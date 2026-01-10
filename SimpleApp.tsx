@@ -118,7 +118,7 @@ const SimpleApp: React.FC<SimpleAppProps> = ({ onAdminLoginAttempt, user }) => {
             </button>
           </div>
         )}
-      </header>
+      </div>
 
       <main className="w-full flex justify-center mt-12">
         {!isAuthenticated ? (
@@ -169,7 +169,6 @@ const SimpleApp: React.FC<SimpleAppProps> = ({ onAdminLoginAttempt, user }) => {
         )}
       </main>
     </div>
-    </div >
   );
 };
 
