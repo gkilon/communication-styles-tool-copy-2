@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>שאלון סגנונות תקשורת</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                dark: '#111111',
+                accent: '#607d8b',
+                touch: '#f26522',
+                muted: '#9ca3af',
+                beige: '#f4f3ef',
+              }
+            },
+            fontFamily: {
+              sans: ['Assistant', 'sans-serif'],
+            }
+          }
+        }
+      }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <!-- Global Error Handler for White Screen Debugging -->
+    <script>
+      window.onerror = function(message, source, lineno, colno, error) {
+        var root = document.getElementById('root');
+        // Only show if root is empty (meaning React failed to mount)
+        if (root && root.innerHTML.trim() === "") {
+            var errorDiv = document.createElement('div');
+            errorDiv.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#111;color:#ff5555;padding:20px;font-family:monospace;z-index:9999;direction:ltr;overflow:auto;';
+            errorDiv.innerHTML = '<h1>Startup Error</h1><p>' + message + '</p><p>Source: ' + source + ':' + lineno + '</p>';
+            if(error && error.stack) {
+               errorDiv.innerHTML += '<pre style="white-space:pre-wrap;margin-top:20px;color:#ccc">' + error.stack + '</pre>';
+            }
+            document.body.appendChild(errorDiv);
+        }
+      };
+    </script>
+
+    <style>
+      body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        background-color: #f4f3ef;
+      }
+      .bg-grid-pattern {
+        background-image: 
+          linear-gradient(to right, rgba(17, 17, 17, 0.05) 1px, transparent 1px), 
+          linear-gradient(to bottom, rgba(17, 17, 17, 0.05) 1px, transparent 1px);
+        background-size: 40px 40px;
+      }
+      @keyframes fade-in-up {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .animate-fade-in-up {
+        animation: fade-in-up 0.5s ease-out forwards;
+      }
+      .animate-fade-in {
+        animation: fade-in-up 0.5s ease-out forwards;
+      }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "@netlify/functions": "https://aistudiocdn.com/@netlify/functions@^5.1.0",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.29.0",
+    "vite": "https://aistudiocdn.com/vite@^7.2.2",
+    "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.0",
+    "firebase/": "https://aistudiocdn.com/firebase@^12.6.0/",
+    "buffer": "https://aistudiocdn.com/buffer@^6.0.3"
+  }
+}
+</script>
+</head>
+  <body class="text-brand-dark font-sans">
+    <div class="fixed inset-0 bg-grid-pattern pointer-events-none opacity-40 z-0"></div>
+    <div id="root" class="relative z-10"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
