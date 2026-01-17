@@ -4,30 +4,23 @@ import { initializeApp } from "firebase/app";
 import { getAuth, Auth } from "firebase/auth";
 import { getFirestore, Firestore } from "firebase/firestore";
 
-// פונקציה בטוחה לשליפת משתנים
-const getEnv = (key: string) => {
-  try {
-    // @ts-ignore
-    if (typeof import.meta !== 'undefined' && import.meta.env) {
-      // @ts-ignore
-      return import.meta.env[key];
-    }
-  } catch (e) {
-    return undefined;
-  }
-  return undefined;
-};
-
-// הגדרות Firebase - נלקחות אך ורק ממשתני סביבה!
-// אין להכניס כאן ערכים קשיחים (Hardcoded strings)
+// הגדרות Firebase - נלקחות ממשתני סביבה באמצעות import.meta.env
+// חשוב לגשת אליהם ישירות כדי ש-Vite יוכל להחליף אותם בזמן בנייה
 const firebaseConfig = {
-  apiKey: getEnv("VITE_FIREBASE_API_KEY"),
-  authDomain: getEnv("VITE_FIREBASE_AUTH_DOMAIN"),
-  projectId: getEnv("VITE_FIREBASE_PROJECT_ID"),
-  storageBucket: getEnv("VITE_FIREBASE_STORAGE_BUCKET"),
-  messagingSenderId: getEnv("VITE_FIREBASE_MESSAGING_SENDER_ID"),
-  appId: getEnv("VITE_FIREBASE_APP_ID"),
-  measurementId: getEnv("VITE_FIREBASE_MEASUREMENT_ID") || ""
+  // @ts-ignore
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  // @ts-ignore
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  // @ts-ignore
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  // @ts-ignore
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  // @ts-ignore
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  // @ts-ignore
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  // @ts-ignore
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 let auth: Auth = { currentUser: null } as unknown as Auth;
