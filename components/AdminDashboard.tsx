@@ -1,6 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
-import { getAllUsers, createTeam, getTeams, updateUserTeam } from '../services/firebaseService';
+import { getAllUsers, createTeam, getTeams, updateUserTeam, createUserProfile } from '../services/firebaseService';
+import { auth } from '../firebaseConfig';
 import { UserProfile, Team, Scores } from '../types';
 import { ArrowLeftIcon } from './icons/Icons';
 import { TeamAiCoach } from './TeamAiCoach';
@@ -27,7 +28,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack }) => {
         loadData();
     }, []);
 
-    const loadData = async () => {
+    const loadData = async (retryCount = 0) => {
         setLoading(true);
         setError(null);
         try {
@@ -36,13 +37,37 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack }) => {
             setTeams(teamsData);
         } catch (err: any) {
             console.error("Failed to load admin data", err);
+
+            // Auto-repair for main admin if rights are missing
+            if ((err.code === 'permission-denied' || err.message?.includes('permission-denied')) &&
+                auth.currentUser?.email?.toLowerCase() === 'admin@manager.com' &&
+                retryCount === 0) {
+
+                console.log("Attempting to repair admin permissions...");
+                try {
+                    await createUserProfile(auth.currentUser.uid, {
+                        email: auth.currentUser.email,
+                        displayName: auth.currentUser.displayName || 'Admin',
+                        team: 'Management',
+                        role: 'admin'
+                    });
+                    // Retry loading data once after repair
+                    await loadData(1);
+                    return;
+                } catch (repairErr) {
+                    console.error("Repair failed", repairErr);
+                }
+            }
+
             if (err.code === 'permission-denied' || err.message?.includes('permission-denied')) {
                 setError('PERMISSION_DENIED');
             } else {
                 setError(err.message || 'שגיאה לא ידועה בטעינת נתונים');
             }
         } finally {
-            setLoading(false);
+            if (retryCount === 0 || error !== 'PERMISSION_DENIED') {
+                setLoading(false);
+            }
         }
     };
 
