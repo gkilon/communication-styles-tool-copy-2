@@ -81,9 +81,16 @@ export const App: React.FC = () => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
+        // Fast path: Check specific admin email immediately to avoid race conditions
+        if (currentUser.email?.toLowerCase() === 'admin@manager.com') {
+          setView('admin');
+          clearTimeout(timer);
+          return;
+        }
+
         try {
           const profile = await getUserProfile(currentUser.uid);
-          if (profile?.role === 'admin' || currentUser.email === 'admin@manager.com') {
+          if (profile?.role === 'admin') {
             setView('admin');
           } else {
             setView('simple');
