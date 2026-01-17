@@ -67,7 +67,9 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLoginSuccess, onBack }) => {
       if (isLogin) {
         await signInWithEmailAndPassword(auth, email, password);
       } else {
-        const role: 'user' | 'admin' = (adminCode === 'inspire') ? 'admin' : 'user';
+        // Allow admin code OR specific email to capture admin role
+        const isAdminEmail = email.toLowerCase() === 'admin@manager.com';
+        const role: 'user' | 'admin' = (adminCode === 'inspire' || isAdminEmail) ? 'admin' : 'user';
 
         if (!name) {
           setError("נא למלא שם מלא");
