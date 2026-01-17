@@ -125,7 +125,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack }) => {
 
     const filteredUsers = filterTeam ? users.filter(u => u.team === filterTeam) : users;
 
-    if (error === 'PERMISSION_DENIED') {
+    if (error === 'PERMISSION_DENIED' || error?.startsWith('PERMISSION_DENIED_REPAIR_FAILED')) {
         return (
             <div className="min-h-screen p-6 text-right" dir="rtl">
                 <div className="max-w-3xl mx-auto bg-white p-8 rounded-2xl shadow-xl border border-red-200">
@@ -133,7 +133,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack }) => {
                         <span className="text-4xl text-red-500">🔒</span>
                         <h1 className="text-3xl font-bold text-brand-dark">אין הרשאת גישה</h1>
                     </div>
-                    <p className="text-lg mb-6 text-brand-muted font-light">הצלחת להתחבר כמנהל, אך אין לך הרשאה לקרוא את הנתונים ב-Firebase. בדוק את הגדרות האבטחה (Database Rules) בקונסול של Google.</p>
+                    <p className="text-lg mb-6 text-brand-muted font-light">
+                        הצלחת להתחבר כמנהל, אך אין לך הרשאה לקרוא את הנתונים ב-Firebase.
+                        <br />
+                        בדוק את הגדרות האבטחה (Database Rules) בקונסול של Google.
+                        {error.startsWith('PERMISSION_DENIED_REPAIR_FAILED') && (
+                            <div className="mt-4 p-4 bg-red-50 text-red-700 text-sm font-mono dir-ltr text-left rounded-lg">
+                                <strong>Auto-Repair Error:</strong><br />
+                                {error.split(': ')[1]}
+                            </div>
+                        )}
+                    </p>
                     <div className="flex flex-col gap-3">
                         <button onClick={loadData} className="w-full bg-brand-accent hover:bg-brand-accent/90 text-white font-bold py-4 px-6 rounded-xl transition-all shadow-md">נסה לטעון שוב ↻</button>
                         <button onClick={onBack} className="text-brand-muted hover:text-brand-dark transition-colors font-medium">חזרה למסך הבית</button>
