@@ -3,7 +3,7 @@ import type { Handler, HandlerEvent } from "@netlify/functions";
 import { GoogleGenAI } from "@google/genai";
 
 const handler: Handler = async (event: HandlerEvent) => {
-  const headers = { 
+  const headers = {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
@@ -37,47 +37,65 @@ const handler: Handler = async (event: HandlerEvent) => {
 
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     let systemInstruction = "";
-    
+
     if (mode === 'team') {
-        const { red, yellow, green, blue, total } = teamStats || { red:0, yellow:0, green:0, blue:0, total:0 };
-        
-        systemInstruction = `אתה יועץ ארגוני בכיר. נתח את אתגר הצוות הבא על בסיס מודל ארבעת הצבעים.
-        נתוני הצוות (סה"כ ${total} משתתפים):
-        - אדום: ${red}
-        - צהוב: ${yellow}
-        - ירוק: ${green}
-        - כחול: ${blue}
+      const { red, yellow, green, blue, total } = teamStats || { red: 0, yellow: 0, green: 0, blue: 0, total: 0 };
 
-        האתגר: "${userInput}"
-
-        נתח בפירוט:
-        1. מדוע הרכב הצבעים הזה חווה את האתגר הזה?
-        2. מהו הסגנון החסר בצוות?
-        3. 3 המלצות פרקטיות לביצוע מיידי.
-        כתוב בעברית מקצועית בפורמט Markdown.`;
+      systemInstruction = `
+    אתה יועץ ארגוני בכיר ומאמן מנהלים מומחה במתודולוגיית DISC (ארבעת הצבעים).
+    
+    תפקידך לספק למשתמש ניתוח צוותי מעמיק, חד ופרקטי.
+    התשובה חייבת להיות בעברית עשירה ומקצועית (Markdown).
+    
+    נתוני הצוות (${total} משתתפים):
+    - אדום (דומיננטיות): ${red}
+    - צהוב (השפעה): ${yellow}
+    - ירוק (יציבות): ${green}
+    - כחול (דיוק): ${blue}
+    
+    האתגר הצוותי: "${userInput}"
+    
+    מבנה התשובה:
+    1. **אבחון המצב**: שיקוף הדינמיקה הצוותית לאור הרכב הצבעים והאתגר.
+    2. **ניתוח הכשל/ההזדמנות**: הסבר מדוע הרכב זה מתקשה (או מצליח) באתגר זה. זהה את "הצבע החסר".
+    3. **תוכנית פעולה**: 3 צעדים מנהיגותיים קונקרטיים.
+        `;
     } else {
-        const sA = Number(scores?.a || 0);
-        const sB = Number(scores?.b || 0);
-        const sC = Number(scores?.c || 0);
-        const sD = Number(scores?.d || 0);
-        const r = sA + sC;
-        const y = sA + sD;
-        const g = sB + sD;
-        const b = sB + sC;
-        const colors = [{n:'אדום',v:r},{n:'צהוב',v:y},{n:'ירוק',v:g},{n:'כחול',v:b}].sort((m,n)=>n.v-m.v);
+      const sA = Number(scores?.a || 0);
+      const sB = Number(scores?.b || 0);
+      const sC = Number(scores?.c || 0);
+      const sD = Number(scores?.d || 0);
+      const r = sA + sC;
+      const y = sA + sD;
+      const g = sB + sD;
+      const b = sB + sC;
+      const colors = [{ n: 'אדום', v: r }, { n: 'צהוב', v: y }, { n: 'ירוק', v: g }, { n: 'כחול', v: b }].sort((m, n) => n.v - m.v);
 
-        systemInstruction = `אתה מאמן תקשורת אישי. המשתמש הוא בפרופיל דומיננטי ${colors[0].n} ומשני ${colors[1].n}.
-        ענה על השאלה: "${userInput}" בצורה תומכת ומקדמת בעברית.`;
+      systemInstruction = `
+    אתה יועץ ארגוני ומאמן אישי מומחה במודל ארבעת הצבעים.
+    
+    פרופיל המשתמש:
+    - דומיננטי: ${colors[0].n} (${colors[0].v})
+    - משני: ${colors[1].n} (${colors[1].v})
+    
+    השאלה/האתגר: "${userInput}"
+    
+    כתוב תשובה קצרה, חדה ומעצימה המותאמת אישית לפרופיל ${colors[0].n}.
+    מבנה:
+    1. **שיקוף**: איך הטיפוס שלך רואה את המצב.
+    2. **עצה מעשית**: מה כדאי לעשות (Action Item).
+    3. **נקודה למחשבה**: מה הצבע המשלים (למשל ${colors[3].n}) היה אומר על זה.
+        `;
     }
 
     const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview", 
-        contents: userInput, // Simplified format as per guidelines
-        config: {
-            systemInstruction: systemInstruction,
-            temperature: 0.8,
-            topP: 0.95
-        }
+      model: "gemini-3-flash-preview",
+      contents: userInput, // Simplified format as per guidelines
+      config: {
+        systemInstruction: systemInstruction,
+        temperature: 0.8,
+        topP: 0.95
+      }
     });
 
     const outputText = response.text || "לא הצלחתי לגבש תשובה. נסה שוב בניסוח אחר.";

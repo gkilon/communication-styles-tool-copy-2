@@ -141,6 +141,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack }) => {
                             <div className="mt-4 p-4 bg-red-50 text-red-700 text-sm font-mono dir-ltr text-left rounded-lg">
                                 <strong>Auto-Repair Error:</strong><br />
                                 {error.split(': ')[1]}
+                                <br /><br />
+                                <span className="font-bold text-red-800">Tip: Check if 'team' is 'manager' (lowercase). It MUST be 'Management'.</span>
                             </div>
                         )}
                     </p>
