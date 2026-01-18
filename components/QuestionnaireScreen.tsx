@@ -71,6 +71,19 @@ export const QuestionnaireScreen: React.FC<QuestionnaireScreenProps> = ({
           // Pass 0 if undefined to indicate "not answered" to the slider
           value={answers[currentQuestion.id] || 0}
           onChange={(value) => handleAnswerChange(currentQuestion.id, value)}
+          onCommit={() => {
+            // Auto-advance after a short delay to let user see feedback
+            if (currentQuestionIndex < totalQuestions - 1) {
+              setTimeout(() => {
+                setCurrentQuestionIndex(prev => {
+                  // Only advance if we are still on the same question (simple check) 
+                  // and not already at the end.
+                  if (prev < totalQuestions - 1) return prev + 1;
+                  return prev;
+                });
+              }, 700);
+            }
+          }}
         />
       </div>
 
@@ -89,8 +102,8 @@ export const QuestionnaireScreen: React.FC<QuestionnaireScreenProps> = ({
             onClick={handleNext}
             disabled={!isAnswered}
             className={`flex items-center gap-2 font-bold py-3 px-8 rounded-full transition-all duration-300 transform shadow-lg text-lg ${isAnswered
-                ? 'bg-brand-accent hover:bg-brand-accent/90 hover:scale-105 text-white cursor-pointer shadow-brand-accent/20'
-                : 'bg-brand-muted/20 text-brand-muted opacity-50 cursor-not-allowed'
+              ? 'bg-brand-accent hover:bg-brand-accent/90 hover:scale-105 text-white cursor-pointer shadow-brand-accent/20'
+              : 'bg-brand-muted/20 text-brand-muted opacity-50 cursor-not-allowed'
               }`}
           >
             <span>{currentQuestionIndex === totalQuestions - 1 ? 'צפה בתוצאות' : 'הבא'}</span>

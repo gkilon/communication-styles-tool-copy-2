@@ -65,7 +65,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack }) => {
                 setError(err.message || 'שגיאה לא ידועה בטעינת נתונים');
             }
         } finally {
-            if (retryCount === 0 || error !== 'PERMISSION_DENIED') {
+            // Always stop loading after attempt, unless we are midway through a repair retry (retryCount 0 -> 1)
+            // But if we are done (retryCount > 0) or error is PERMISSION_DENIED (and no repair started), stop loading.
+            if (retryCount !== 0 || error === 'PERMISSION_DENIED') {
+                setLoading(false);
+            } else if (!error) {
+                setLoading(false);
+            }
+
+            if (retryCount > 0 || (error && error !== 'PERMISSION_DENIED_REPAIR_FAILED')) {
                 setLoading(false);
             }
         }
@@ -147,7 +155,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack }) => {
                         )}
                     </p>
                     <div className="flex flex-col gap-3">
-                        <button onClick={loadData} className="w-full bg-brand-accent hover:bg-brand-accent/90 text-white font-bold py-4 px-6 rounded-xl transition-all shadow-md">נסה לטעון שוב ↻</button>
+                        <button onClick={() => loadData()} className="w-full bg-brand-accent hover:bg-brand-accent/90 text-white font-bold py-4 px-6 rounded-xl transition-all shadow-md">נסה לטעון שוב ↻</button>
                         <button onClick={onBack} className="text-brand-muted hover:text-brand-dark transition-colors font-medium">חזרה למסך הבית</button>
                     </div>
                 </div>

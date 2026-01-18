@@ -5,9 +5,10 @@ interface QuestionSliderProps {
   question: QuestionPair;
   value: number;
   onChange: (value: number) => void;
+  onCommit?: () => void;
 }
 
-export const QuestionSlider: React.FC<QuestionSliderProps> = ({ question, value, onChange }) => {
+export const QuestionSlider: React.FC<QuestionSliderProps> = ({ question, value, onChange, onCommit }) => {
   const [trait1, trait2] = question.pair;
   const [desc1, desc2] = question.descriptions || ['', ''];
 
@@ -16,18 +17,22 @@ export const QuestionSlider: React.FC<QuestionSliderProps> = ({ question, value,
   const visualValue = value === 0 ? 3.5 : value;
   const isUnanswered = value === 0;
 
+  const handleCommit = () => {
+    if (onCommit) onCommit();
+  };
+
   return (
     <div className="w-full select-none">
       {/* Labels Row */}
       <div className="flex justify-between items-start text-brand-dark mb-8 tracking-wide">
         {/* Right Side (Trait 1) */}
-        <div className="text-right w-1/2 pl-4 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => onChange(1)}>
+        <div className="text-right w-1/2 pl-4 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => { onChange(1); handleCommit(); }}>
           <div className="text-xl sm:text-2xl md:text-3xl font-bold text-brand-accent">{trait1}</div>
           <div className="text-sm sm:text-base text-brand-muted mt-1 leading-tight">{desc1}</div>
         </div>
 
         {/* Left Side (Trait 2) */}
-        <div className="text-left w-1/2 pr-4 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => onChange(6)}>
+        <div className="text-left w-1/2 pr-4 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => { onChange(6); handleCommit(); }}>
           <div className="text-xl sm:text-2xl md:text-3xl font-bold text-brand-accent">{trait2}</div>
           <div className="text-sm sm:text-base text-brand-muted mt-1 leading-tight">{desc2}</div>
         </div>
@@ -93,6 +98,8 @@ export const QuestionSlider: React.FC<QuestionSliderProps> = ({ question, value,
           step="1"
           value={visualValue}
           onChange={(e) => onChange(Number(e.target.value))}
+          onMouseUp={handleCommit}
+          onTouchEnd={handleCommit}
           className={`w-full h-2 rounded-lg appearance-none cursor-pointer ${isUnanswered ? 'slider-unanswered' : ''}`}
         />
 
